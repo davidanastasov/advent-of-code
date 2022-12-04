@@ -24,8 +24,8 @@ fi
 cp -r .template $day
 
 # Start the deno watchers
-chmod +x start.sh
-./start.sh $day
+chmod +x watch.sh
+./watch.sh $day
 
 # Kill the watchers on exit
 trap "kill -- -$$" EXIT
