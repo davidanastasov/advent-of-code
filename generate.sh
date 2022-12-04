@@ -23,6 +23,9 @@ fi
 # Copy the template to the day
 cp -r .template "$day"
 
+# Open files in VSCode
+code -r "$day"/a.ts "$day"/b.ts "$day"/input.txt
+
 # Start the deno watchers
 chmod +x watch.sh
 ./watch.sh "$day"
