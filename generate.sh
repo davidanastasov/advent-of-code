@@ -1,3 +1,4 @@
+#!/bin/bash
 # Usage: generate.sh <day>
 
 # Check if the day is given
@@ -21,3 +22,10 @@ fi
 
 # Copy the template to the day
 cp -r .template $day
+
+# Start the deno watchers
+chmod +x start.sh
+./start.sh $day
+
+# Kill the watchers on exit
+trap "kill -- -$$" EXIT
