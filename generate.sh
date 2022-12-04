@@ -21,11 +21,11 @@ if [ -d "$day" ]; then
 fi
 
 # Copy the template to the day
-cp -r .template $day
+cp -r .template "$day"
 
 # Start the deno watchers
 chmod +x watch.sh
-./watch.sh $day
+./watch.sh "$day"
 
 # Kill the watchers on exit
 trap "kill -- -$$" EXIT
