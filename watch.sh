@@ -29,8 +29,8 @@ YELLOW=$(tput setaf 3)
 NONE=$(tput op)
 
 # Start the deno watchers
-deno run --allow-all --quiet --no-clear-screen --watch a.ts | sed -e 's/^/'"$BLUE"'[Part 1]'"$NONE"'\ /' & 
-deno run --allow-all --quiet --no-clear-screen --watch b.ts | sed -e 's/^/'"$YELLOW"'[Part 2]'"$NONE"'\ /' &
+deno run --allow-all --quiet --watch a.ts | sed -e 's/^/'"$BLUE"'[Part 1]'"$NONE"'\ /' & 
+deno run --allow-all --quiet --watch b.ts | sed -e 's/^/'"$YELLOW"'[Part 2]'"$NONE"'\ /' &
 
 # Kill all deno processes on exit
 trap "kill -- -$$" EXIT
