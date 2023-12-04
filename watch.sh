@@ -14,14 +14,17 @@ else
     day=$1
 fi
 
+year=$(date +"%Y")
+day_path="$year/$day"
+
 # Check if the day doesn't exists
-if [ ! -d "$day" ]; then
+if [ ! -d "$day_path" ]; then
     echo "Day doesn't exist"
     exit 1
 fi
 
 # Set cwd
-cd "$day"
+cd "$day_path"
 
 # Console colors
 BLUE=$(tput setaf 4)

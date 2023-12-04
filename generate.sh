@@ -14,17 +14,23 @@ else
     day=$1
 fi
 
+year=$(date +"%Y")
+day_path="$year/$day"
+
 # Check if the day already exists
-if [ -d "$day" ]; then
+if [ -d "$day_path" ]; then
     echo "Day already exists"
     exit 1
 fi
 
+# Create the year folder if it doesn't exist
+mkdir -p "$year"
+
 # Copy the template to the day
-cp -r .template "$day"
+cp -r .template "$day_path"
 
 # Open files in VSCode
-code -r "$day"/a.ts "$day"/b.ts "$day"/input.txt
+code -r "$day_path"/a.ts "$day_path"/b.ts "$day_path"/input.txt
 
 # Start the deno watchers
 chmod +x watch.sh
