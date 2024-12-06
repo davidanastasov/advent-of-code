@@ -25,16 +25,13 @@ function doesGuardEscape(
   let inBounds = true;
   let isInLoop = false;
 
-  const last10Moves: string[] = [];
-  const allMoves: string[] = [];
-
   let x = startX;
   let y = startY;
   let direction = startDirection;
 
-  while (inBounds && !isInLoop) {
-    const prevDir = direction;
+  const path = new Set<string>();
 
+  while (inBounds && !isInLoop) {
     // Do movement
     switch (direction) {
       case directions.UP:
@@ -95,38 +92,15 @@ function doesGuardEscape(
       break;
     }
 
-    if (last10Moves.length === 10) {
-      last10Moves.shift();
-    }
-    last10Moves.push(`${x},${y}`);
-
-    if (prevDir !== direction) {
-      isInLoop = checkForLoop(allMoves, last10Moves);
+    if (path.has(`${x};${y};${direction}`)) {
+      isInLoop = true;
+      break;
     }
 
-    allMoves.push(`${x},${y}`);
+    path.add(`${x};${y};${direction}`);
   }
 
-  return !inBounds;
-}
-
-function checkForLoop(all: string[], search: string[]) {
-  for (let i = 0; i < all.length - search.length; i++) {
-    let fullMatch = true;
-
-    for (let j = 0; j < search.length; j++) {
-      if (all[i + j] !== search[j]) {
-        fullMatch = false;
-        break;
-      }
-    }
-
-    if (fullMatch) {
-      return true;
-    }
-  }
-
-  return false;
+  return { escaped: !inBounds, path };
 }
 
 function findGuardPosition(grid: string[][]) {
@@ -141,30 +115,37 @@ function findGuardPosition(grid: string[][]) {
 }
 
 const guard = findGuardPosition(originalGrid);
+const { path } = doesGuardEscape(
+  originalGrid,
+  guard.x,
+  guard.y,
+  guard.direction
+);
 
-let valid = 0;
-for (let i = 0; i < originalGrid.length; i++) {
-  for (let j = 0; j < originalGrid[i].length; j++) {
-    if (originalGrid[i][j] !== characters.EMPTY) {
-      continue;
-    }
+const obstaclePositions = new Set<string>();
+path.forEach((position) => {
+  const x = Number(position.split(";")[0]);
+  const y = Number(position.split(";")[1]);
 
-    originalGrid[i][j] = characters.CRATE;
-
-    const escapes = doesGuardEscape(
-      originalGrid,
-      guard.x,
-      guard.y,
-      guard.direction
-    );
-    console.log(i, j, escapes);
-
-    originalGrid[i][j] = characters.EMPTY;
-
-    if (!escapes) {
-      valid++;
-    }
+  // Remove player position
+  if (originalGrid[x][y] !== characters.EMPTY) {
+    return;
   }
-}
 
-console.log(valid);
+  originalGrid[x][y] = characters.CRATE;
+
+  const { escaped } = doesGuardEscape(
+    originalGrid,
+    guard.x,
+    guard.y,
+    guard.direction
+  );
+
+  originalGrid[x][y] = characters.EMPTY;
+
+  if (!escaped) {
+    obstaclePositions.add(`${x};${y}`);
+  }
+});
+
+console.log(obstaclePositions.size);
