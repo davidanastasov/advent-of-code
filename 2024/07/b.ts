@@ -2,45 +2,31 @@ const input = await Deno.readTextFile("./input.txt");
 
 const equations = input.split("\r\n");
 
-function generatePermutations(level: number) {
+const operators = ["+", "*", "||"];
+
+function generatePermutations(operators: string[], level: number) {
   if (level == 0) {
     return [];
   }
 
-  const plus: string[][] = [];
-  const plusPermutations = generatePermutations(level - 1);
+  const all: string[][] = [];
 
-  if (plusPermutations?.length == 0) {
-    plus.push(["+"]);
-  }
+  operators.forEach((operator) => {
+    const operatorPermutations: string[][] = [];
+    const permutations = generatePermutations(operators, level - 1);
 
-  plusPermutations?.forEach((permutation) => {
-    plus.push(["+", ...permutation]);
+    if (permutations?.length == 0) {
+      operatorPermutations.push([operator]);
+    }
+
+    permutations?.forEach((permutation) => {
+      operatorPermutations.push([operator, ...permutation]);
+    });
+
+    all.push(...operatorPermutations);
   });
 
-  const multiply: string[][] = [];
-  const multiplyPermutations = generatePermutations(level - 1);
-
-  if (multiplyPermutations?.length == 0) {
-    multiply.push(["*"]);
-  }
-
-  multiplyPermutations?.forEach((permutation) => {
-    multiply.push(["*", ...permutation]);
-  });
-
-  const concat: string[][] = [];
-  const concatPermutations = generatePermutations(level - 1);
-
-  if (concatPermutations?.length == 0) {
-    concat.push(["||"]);
-  }
-
-  concatPermutations?.forEach((permutation) => {
-    concat.push(["||", ...permutation]);
-  });
-
-  return [...plus, ...multiply, ...concat];
+  return all;
 }
 
 const possible: Record<number, number> = {};
@@ -53,7 +39,7 @@ equations.forEach((equation, i) => {
   let possible_permutations = cache[numbers.length];
 
   if (!possible_permutations) {
-    possible_permutations = generatePermutations(numbers.length - 1);
+    possible_permutations = generatePermutations(operators, numbers.length - 1);
     cache[numbers.length] = possible_permutations;
   }
 
