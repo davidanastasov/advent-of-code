@@ -14,6 +14,20 @@ const startPosition: Position = {
   col: grid[0].findIndex((e) => e === Characters.StartPoint),
 };
 
+function getNextPositions(position: Position): Position[] {
+  const nextPositions: Position[] = [];
+  const current = grid[position.row + 1][position.col];
+
+  if (current === Characters.Empty) {
+    nextPositions.push({ row: position.row + 1, col: position.col });
+  } else if (current === Characters.Splitter) {
+    nextPositions.push({ row: position.row + 1, col: position.col - 1 });
+    nextPositions.push({ row: position.row + 1, col: position.col + 1 });
+  }
+
+  return nextPositions;
+}
+
 const cache = new Map<string, number>();
 
 function countPathsDFS(start: Position) {
@@ -26,22 +40,10 @@ function countPathsDFS(start: Position) {
   }
 
   let pathsCount = 0;
-  const directions: Position[] = [];
 
-  if (grid[start.row + 1][start.col] === Characters.Empty) {
-    directions.push({ row: 1, col: 0 });
-  } else if (grid[start.row + 1][start.col] === Characters.Splitter) {
-    directions.push({ row: 1, col: -1 });
-    directions.push({ row: 1, col: 1 });
-  }
-
-  directions.forEach((dir) => {
-    const newPos: Position = {
-      row: start.row + dir.row,
-      col: start.col + dir.col,
-    };
-
-    const newPathsCount = countPathsDFS(newPos);
+  const nextPositions = getNextPositions(start);
+  nextPositions.forEach((next) => {
+    const newPathsCount = countPathsDFS(next);
     pathsCount += Math.max(1, newPathsCount);
   });
 

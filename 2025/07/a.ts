@@ -14,6 +14,20 @@ const startPosition: Position = {
   col: grid[0].findIndex((e) => e === Characters.StartPoint),
 };
 
+function getNextPositions(position: Position): Position[] {
+  const nextPositions: Position[] = [];
+  const current = grid[position.row + 1][position.col];
+
+  if (current === Characters.Empty) {
+    nextPositions.push({ row: position.row + 1, col: position.col });
+  } else if (current === Characters.Splitter) {
+    nextPositions.push({ row: position.row + 1, col: position.col - 1 });
+    nextPositions.push({ row: position.row + 1, col: position.col + 1 });
+  }
+
+  return nextPositions;
+}
+
 function countSplitsBFS(start: Position) {
   let counterSplit = 0;
   const queue = [start];
@@ -23,19 +37,13 @@ function countSplitsBFS(start: Position) {
 
     if (position.row + 1 >= grid.length) continue;
 
-    const nextSpot = grid[position.row + 1][position.col];
-    if (nextSpot === Characters.Empty) {
-      queue.push({ row: position.row + 1, col: position.col });
-      grid[position.row + 1][position.col] = Characters.Beam;
-    } else if (nextSpot === Characters.Splitter) {
-      queue.push({ row: position.row + 1, col: position.col - 1 });
-      queue.push({ row: position.row + 1, col: position.col + 1 });
+    const nextPositions = getNextPositions(position);
+    nextPositions.forEach((next) => {
+      queue.push(next);
+      grid[next.row][next.col] = Characters.Beam;
+    });
 
-      grid[position.row + 1][position.col - 1] = Characters.Beam;
-      grid[position.row + 1][position.col + 1] = Characters.Beam;
-
-      counterSplit++;
-    }
+    if (nextPositions.length === 2) counterSplit++;
   }
 
   return counterSplit;
